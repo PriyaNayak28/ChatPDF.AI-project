@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import '../styles/Navbar.css'
 
 const Navbar: React.FC = () => {
@@ -16,15 +16,24 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <Link to="/" className="nav-btn">
+      <NavLink
+        to="/"
+        className={({ isActive }) => (isActive ? 'nav-btn active' : 'nav-btn')}
+      >
         Home
-      </Link>
-      <Link to="/about" className="nav-btn">
+      </NavLink>
+      <NavLink
+        to="/about"
+        className={({ isActive }) => (isActive ? 'nav-btn active' : 'nav-btn')}
+      >
         About
-      </Link>
-      <Link to="/features" className="nav-btn">
+      </NavLink>
+      <NavLink
+        to="/features"
+        className={({ isActive }) => (isActive ? 'nav-btn active' : 'nav-btn')}
+      >
         Features
-      </Link>
+      </NavLink>
     </nav>
   )
 }

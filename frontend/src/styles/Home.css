@@ -42,3 +42,42 @@
   /* border: 2px solid red; */
   /* height: 250px; */
 }
+
+.features-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 30vh;
+  width: 100%;
+  margin-top: 4rem;
+  z-index: 1;
+  position: relative;
+}
+
+.features-border {
+  --b: 5px; /* border width */
+  --r: 20px;
+  --c: linear-gradient(135deg, #ff007a, #a10050, #430e18);
+  color: white;
+  width: 70%;
+  padding: 2rem;
+  text-align: center;
+  font-size: 1.5rem;
+  position: relative;
+  border-radius: 20px;
+  background-color: transparent;
+  z-index: 1;
+}
+
+.features-border::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: var(--c);
+  padding: var(--b);
+  border-radius: var(--r);
+  mask: linear-gradient(#000 0 0) exclude, linear-gradient(#000 0 0) content-box;
+  -webkit-mask: linear-gradient(#000 0 0) exclude,
+    linear-gradient(#000 0 0) content-box;
+}

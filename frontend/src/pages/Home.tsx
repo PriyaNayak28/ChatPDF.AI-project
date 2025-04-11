@@ -14,6 +14,17 @@ const Home: React.FC = () => {
         </p>
         <button className="cta-button">Try It Now</button>
         <img src={chatpdf} alt="img" className="chatpdf" />
+
+        {/* New Features Section */}
+        <div className="features-wrapper">
+          <div className="features-border">
+            <h3 className="features-title">
+              Like having a{' '}
+              <span style={{ color: '#FF007A' }}>personal AI </span> <br />
+              that reads your documents for you.
+            </h3>
+          </div>
+        </div>
       </div>
     </>
   )
