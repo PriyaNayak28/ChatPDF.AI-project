@@ -1,7 +1,8 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
-import Home from './pages/Home'
+import MainPage from './pages/MainPage'
+import Hero from './pages/Hero'
 
 const App: React.FC = () => {
   return (
@@ -16,9 +17,8 @@ const App: React.FC = () => {
         <Navbar />
         <div className="fade-top" />
         <Routes>
-          <Route path="/" element={<Home />} />
-          {/* <Route path="/about" element={<div>About Page</div>} />
-          <Route path="/features" element={<div>Features Page</div>} /> */}
+          <Route path="/*" element={<MainPage />} />
+          <Route path="/Hero" element={<Hero />} />
         </Routes>
       </Router>
     </>
