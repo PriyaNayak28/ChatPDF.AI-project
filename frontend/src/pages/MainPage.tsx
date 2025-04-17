@@ -69,8 +69,8 @@ const MainPage: React.FC = () => {
                   <i className="fas fa-flask"></i>
                   <h4>For Researchers</h4>
                   <p>
-                    Explore scientific papers, academic articles, and books to get
-                    the information you need for your research.
+                    Explore scientific papers, academic articles, and books to
+                    get the information you need for your research.
                   </p>
                 </div>
 
@@ -96,8 +96,8 @@ const MainPage: React.FC = () => {
                   <i className="fas fa-link"></i>
                   <h4>Cited Sources</h4>
                   <p>
-                    Built-in citations anchor responses to PDF references. No more
-                    page-by-page searching.
+                    Built-in citations anchor responses to PDF references. No
+                    more page-by-page searching.
                   </p>
                 </div>
 
@@ -106,8 +106,8 @@ const MainPage: React.FC = () => {
                   <i className="fas fa-flask"></i>
                   <h4>For Researchers</h4>
                   <p>
-                    Explore scientific papers, academic articles, and books to get
-                    the information you need for your research.
+                    Explore scientific papers, academic articles, and books to
+                    get the information you need for your research.
                   </p>
                 </div>
 
@@ -133,15 +133,15 @@ const MainPage: React.FC = () => {
                   <i className="fas fa-link"></i>
                   <h4>Cited Sources</h4>
                   <p>
-                    Built-in citations anchor responses to PDF references. No more
-                    page-by-page searching.
+                    Built-in citations anchor responses to PDF references. No
+                    more page-by-page searching.
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="upload-section">
-              <div 
+              <div
                 className={`upload-box ${isDragging ? 'dragging' : ''}`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -167,8 +167,9 @@ const MainPage: React.FC = () => {
               Chat<span>PDF</span>.AI
             </h2>
             <p className="contact-description">
-              ChatPDF brings ChatGPT-style intelligence and PDF AI technology together 
-              for smarter document understanding. Summarize, chat, analyze - start now.
+              ChatPDF brings ChatGPT-style intelligence and PDF AI technology
+              together for smarter document understanding. Summarize, chat,
+              analyze - start now.
             </p>
             <div className="rating">
               <div className="stars">
@@ -186,37 +187,63 @@ const MainPage: React.FC = () => {
             <div className="contact-column">
               <h3>Features</h3>
               <ul className="animate-list">
-                <li><i className="fas fa-comments"></i>Chat with PDF</li>
-                <li><i className="fas fa-file-alt"></i>PDF Summary</li>
-                <li><i className="fas fa-graduation-cap"></i>AI Scholar</li>
-                <li><i className="fas fa-robot"></i>PDF AI</li>
+                <li>
+                  <i className="fas fa-comments"></i>Chat with PDF
+                </li>
+                <li>
+                  <i className="fas fa-file-alt"></i>PDF Summary
+                </li>
+                <li>
+                  <i className="fas fa-graduation-cap"></i>AI Scholar
+                </li>
+                <li>
+                  <i className="fas fa-robot"></i>PDF AI
+                </li>
               </ul>
             </div>
 
             <div className="contact-column">
               <h3>Company</h3>
               <ul className="animate-list">
-                <li><i className="fas fa-handshake"></i>Affiliates</li>
-                <li><i className="fas fa-envelope"></i>Contact</li>
-                <li><i className="fas fa-code"></i>API Docs</li>
+                <li>
+                  <i className="fas fa-handshake"></i>Affiliates
+                </li>
+                <li>
+                  <i className="fas fa-envelope"></i>Contact
+                </li>
+                <li>
+                  <i className="fas fa-code"></i>API Docs
+                </li>
               </ul>
             </div>
 
             <div className="contact-column">
               <h3>Legal</h3>
               <ul className="animate-list">
-                <li><i className="fas fa-shield-alt"></i>Privacy Policy</li>
-                <li><i className="fas fa-gavel"></i>Terms & Conditions</li>
-                <li><i className="fas fa-info-circle"></i>Imprint</li>
+                <li>
+                  <i className="fas fa-shield-alt"></i>Privacy Policy
+                </li>
+                <li>
+                  <i className="fas fa-gavel"></i>Terms & Conditions
+                </li>
+                <li>
+                  <i className="fas fa-info-circle"></i>Imprint
+                </li>
               </ul>
             </div>
           </div>
 
           <div className="contact-footer">
             <div className="social-links">
-              <a href="#" className="social-link"><i className="fab fa-twitter"></i></a>
-              <a href="#" className="social-link"><i className="fab fa-linkedin"></i></a>
-              <a href="#" className="social-link"><i className="fab fa-github"></i></a>
+              <a href="#" className="social-link">
+                <i className="fab fa-twitter"></i>
+              </a>
+              <a href="#" className="social-link">
+                <i className="fab fa-linkedin"></i>
+              </a>
+              <a href="#" className="social-link">
+                <i className="fab fa-github"></i>
+              </a>
             </div>
             <p className="copyright">© 2024 ChatPDF.AI - All rights reserved</p>
           </div>

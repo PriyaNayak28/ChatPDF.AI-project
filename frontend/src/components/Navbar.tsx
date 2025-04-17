@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
-      
+
       // Get all sections
       const sections = ['home', 'about', 'features']
       const scrollPosition = window.scrollY + window.innerHeight / 2 // Center of viewport
@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
       for (const section of sections) {
         const element = document.getElementById(section)
         if (element) {
-          const { offsetTop, offsetHeight } = element
+          const { offsetTop } = element
           if (scrollPosition >= offsetTop) {
             currentSection = section
           }
@@ -41,7 +41,9 @@ const Navbar: React.FC = () => {
         to="/"
         className={activeSection === 'home' ? 'nav-btn active' : 'nav-btn'}
         onClick={() => {
-          document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' })
+          document
+            .getElementById('home')
+            ?.scrollIntoView({ behavior: 'smooth' })
         }}
       >
         Home
@@ -50,7 +52,9 @@ const Navbar: React.FC = () => {
         to="/about"
         className={activeSection === 'about' ? 'nav-btn active' : 'nav-btn'}
         onClick={() => {
-          document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
+          document
+            .getElementById('about')
+            ?.scrollIntoView({ behavior: 'smooth' })
         }}
       >
         About
@@ -59,10 +63,12 @@ const Navbar: React.FC = () => {
         to="/features"
         className={activeSection === 'features' ? 'nav-btn active' : 'nav-btn'}
         onClick={() => {
-          document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })
+          document
+            .getElementById('features')
+            ?.scrollIntoView({ behavior: 'smooth' })
         }}
       >
-        Features
+        Contact
       </NavLink>
     </nav>
   )
