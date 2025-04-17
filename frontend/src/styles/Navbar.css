@@ -8,18 +8,23 @@
 
 /* Make navbar sticky */
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 10;
-
+  left: 0;
+  right: 0;
+  z-index: 1000;
   display: flex;
   justify-content: right;
   gap: 2rem;
   padding: 20px 50px;
-
-  transition: box-shadow 0.3s ease;
+  background: linear-gradient(to bottom, rgba(33, 23, 32, 0.95), rgba(17, 14, 21, 0.95));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
+
 .navbar.scrolled {
+  background: linear-gradient(to bottom, rgba(33, 23, 32, 0.98), rgba(17, 14, 21, 0.98));
   box-shadow: 0 10px 20px -5px rgba(255, 0, 122, 0.25),
     0 8px 30px -10px rgba(161, 0, 80, 0.25);
 }

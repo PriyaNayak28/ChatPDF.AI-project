@@ -1,6 +1,6 @@
 .home-container {
   text-align: center;
-  padding: 50px;
+  padding: 100px 50px 50px;
   max-width: 900px;
   margin: auto;
   display: flex;
@@ -47,43 +47,57 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 30vh;
+  min-height: 100vh;
   width: 100%;
-  margin-top: 4rem;
-  z-index: 1;
+  padding: 100px 0;
   position: relative;
+  overflow: hidden;
 }
 
 .features-border {
-  --b: 5px; /* border width */
+  --b: 5px;
   --r: 20px;
   --c: linear-gradient(135deg, #ff007a, #a10050, #430e18);
   color: white;
-  width: 70%;
-  padding: 2rem;
+  width: 90%;
+  max-width: 1200px;
+  padding: 3rem 2rem;
   text-align: center;
   font-size: 1.5rem;
   position: relative;
   border-radius: 20px;
-  background-color: transparent;
-  z-index: 1;
+  background-color: rgba(17, 14, 21, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .features-title {
-  margin-bottom: 2rem; /* Add spacing to push the marquee down */
+  margin-bottom: 4rem;
+  font-size: 2.5rem;
+  line-height: 1.4;
 }
 
-.features-border::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: var(--c);
-  padding: var(--b);
-  border-radius: var(--r);
-  mask: linear-gradient(#000 0 0) exclude, linear-gradient(#000 0 0) content-box;
-  -webkit-mask: linear-gradient(#000 0 0) exclude,
-    linear-gradient(#000 0 0) content-box;
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 20px 0;
+}
+
+.marquee-track {
+  display: flex;
+  gap: 2rem;
+  animation: scroll 30s linear infinite;
+  width: max-content;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .custom-card {
@@ -92,10 +106,10 @@
   height: 240px;
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
-  background-color: transparent;
-  padding: 1.5rem;
+  background-color: rgba(33, 23, 32, 0.5);
+  padding: 2rem;
   border-radius: 1rem;
   text-align: center;
   box-shadow: 0 0 15px rgba(255, 0, 122, 0.3);
@@ -103,6 +117,7 @@
   background-clip: padding-box;
   position: relative;
   transition: transform 0.3s ease;
+  margin: 0 1rem;
 }
 
 .custom-card::before {
@@ -125,40 +140,364 @@
 
 .custom-card h4 {
   margin-top: 1rem;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: #fff;
+  font-weight: 600;
 }
 
 .custom-card p {
-  font-size: 0.95rem;
-  margin-top: 0.5rem;
+  font-size: 1rem;
+  margin-top: 1rem;
   color: #ddd;
+  line-height: 1.6;
+}
+
+.custom-card i {
+  font-size: 2rem;
+  color: #FF007A;
+  margin-bottom: 1rem;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-.marquee-track {
-  display: flex;
-  flex-direction: row; /* ensure horizontal layout */
-  flex-wrap: nowrap; /* don't allow wrapping */
-  animation: scroll-left 20s linear infinite;
-  width: max-content;
+.upload-section {
+  margin-top: 4rem;
+  padding: 2rem;
+  width: 100%;
 }
 
-.marquee-item {
-  display: inline-flex; /* force inline row behavior */
+.upload-box {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem;
+  border: 2px dashed rgba(255, 0, 122, 0.3);
+  border-radius: 20px;
+  background: rgba(33, 23, 32, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: start;
-  margin: 0 1rem;
-  padding: 1rem;
-  min-width: 300px;
-  height: auto;
-  border-radius: 10px;
-  color: #fff;
-  font-weight: 500;
-  text-align: center;
-  box-shadow: 0 0 15px rgba(255, 0, 122, 0.3);
+  gap: 1.5rem;
 }
+
+.upload-box::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 122, 0.5),
+    rgba(161, 0, 80, 0.5),
+    rgba(67, 14, 24, 0.5)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+}
+
+.upload-box:hover, .upload-box.dragging {
+  transform: scale(1.02);
+  border-color: rgba(255, 0, 122, 0.6);
+  background: rgba(33, 23, 32, 0.5);
+  box-shadow: 
+    0 0 20px rgba(255, 0, 122, 0.2),
+    0 0 40px rgba(161, 0, 80, 0.2),
+    inset 0 0 20px rgba(255, 0, 122, 0.1);
+}
+
+.upload-box:hover::before, .upload-box.dragging::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 122, 0.8),
+    rgba(161, 0, 80, 0.8),
+    rgba(67, 14, 24, 0.8)
+  );
+}
+
+.upload-icon {
+  font-size: 3rem;
+  color: #FF007A;
+  margin-bottom: 1rem;
+}
+
+.upload-box h3 {
+  font-size: 1.5rem;
+  color: #fff;
+  margin: 0;
+}
+
+.upload-btn {
+  padding: 12px 28px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #a10050, #ff007a);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 0, 122, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.upload-btn:hover {
+  background: linear-gradient(90deg, #ff007a, #a10050);
+  box-shadow: 
+    0 0 20px rgba(255, 0, 122, 0.4),
+    0 0 30px rgba(161, 0, 80, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Add this to your existing animations */
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: rgba(255, 0, 122, 0.6);
+    box-shadow: 
+      0 0 20px rgba(255, 0, 122, 0.2),
+      0 0 40px rgba(161, 0, 80, 0.2);
+  }
+  50% {
+    border-color: rgba(255, 0, 122, 0.8);
+    box-shadow: 
+      0 0 30px rgba(255, 0, 122, 0.4),
+      0 0 60px rgba(161, 0, 80, 0.3);
+  }
+}
+
+.upload-box.dragging {
+  animation: borderGlow 1.5s ease infinite;
+}
+
+.contact-section {
+  min-height: 100vh;
+  padding: 100px 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(33, 23, 32, 0.95),
+    rgba(17, 14, 21, 0.98)
+  );
+}
+
+.contact-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: fadeInUp 1s ease;
+}
+
+.brand-title {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #fff, #f0f0f0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-title span {
+  color: #FF007A;
+  -webkit-text-fill-color: #FF007A;
+}
+
+.contact-description {
+  font-size: 1.2rem;
+  color: #ccc;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.stars {
+  color: #FF007A;
+}
+
+.rating-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+
+.contact-column {
+  animation: fadeInUp 1s ease;
+}
+
+.contact-column h3 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.contact-column h3::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.5rem;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, #FF007A, transparent);
+}
+
+.animate-list {
+  list-style: none;
+  padding: 0;
+}
+
+.animate-list li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #ccc;
+  padding: 0.8rem 0;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  opacity: 0;
+  animation: slideInRight 0.5s ease forwards;
+}
+
+.animate-list li:hover {
+  color: #fff;
+  transform: translateX(10px);
+}
+
+.animate-list li i {
+  color: #FF007A;
+  width: 20px;
+}
+
+.contact-footer {
+  text-align: center;
+  padding-top: 3rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeIn 1s ease;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.social-link {
+  color: #ccc;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  color: #FF007A;
+  transform: translateY(-3px);
+}
+
+.copyright {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .contact-wrapper {
+    padding: 0 1rem;
+  }
+
+  .brand-title {
+    font-size: 2.5rem;
+  }
+
+  .contact-description {
+    font-size: 1.1rem;
+  }
+
+  .contact-grid {
+    gap: 2rem;
+  }
+
+  .social-links {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-title {
+    font-size: 2rem;
+  }
+
+  .contact-description {
+    font-size: 1rem;
+  }
+
+  .contact-column h3 {
+    font-size: 1.3rem;
+  }
+
+  .animate-list li {
+    font-size: 0.9rem;
+  }
+}
+
+/* Add animation delay for list items */
+.animate-list li:nth-child(1) { animation-delay: 0.1s; }
+.animate-list li:nth-child(2) { animation-delay: 0.2s; }
+.animate-list li:nth-child(3) { animation-delay: 0.3s; }
+.animate-list li:nth-child(4) { animation-delay: 0.4s; }

@@ -26,14 +26,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
 
     try {
       if (isSignup) {
-        await axios.post('http://localhost:3000/user/signup', formData)
+        await axios.post('http://localhost:5000/user/signup', formData)
         alert('User signed up successfully!')
         setIsSignup(false) // Switch to Sign In
         setFormData({ name: '', email: '', password: '' })
         return
       }
 
-      const res = await axios.post('http://localhost:3000/user/login', {
+      const res = await axios.post('http://localhost:5000/user/login', {
         email: formData.email,
         password: formData.password,
       })
