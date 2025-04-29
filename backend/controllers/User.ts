@@ -1,8 +1,9 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import User from '../models/User'
+import User from '../models/user'
 import { UserInstance } from '../types/user'
+import { LocalCustomRequest } from '../types/customRequest'
 
 const isStringInvalid = (input: string | undefined): boolean => {
   return !input || input.length === 0
@@ -77,4 +78,20 @@ const login = async (req: Request, res: Response): Promise<void> => {
   }
 }
 
-export { signup, login, generateAccessToken }
+const getUserProfile = async (
+  req: LocalCustomRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const user = req.user
+    if (!user) {
+      res.status(404).json({ message: 'User not found' })
+      return
+    }
+    res.json({ name: user.name, isPremium: user.isPremium })
+  } catch (err) {
+    res.status(500).json({ message: 'Something went wrong' })
+  }
+}
+
+export { signup, login, generateAccessToken, getUserProfile }

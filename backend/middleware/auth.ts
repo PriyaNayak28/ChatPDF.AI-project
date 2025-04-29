@@ -1,6 +1,20 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import User from '../models/User'
+import User from '../models/user'
+import { LocalCustomRequest } from '../types/customRequest'
+
+interface CustomUser {
+  id: number
+  name?: string
+  email?: string
+  isPremium: boolean
+}
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: CustomUser
+  }
+}
 
 interface JwtPayload {
   userId: number
@@ -8,23 +22,24 @@ interface JwtPayload {
   ispremiumuser: boolean
 }
 
-interface AuthenticatedRequest extends Request {
-  user?: User
-}
-
 export const authenticate = async (
-  req: AuthenticatedRequest,
+  req: LocalCustomRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const token = req.header('Authorization')
-    if (!token) {
+    const authHeader = req.header('Authorization')
+    if (!authHeader) {
       res.status(401).json({ success: false, message: 'Token missing' })
       return
     }
 
-    const decoded = jwt.verify(token, '#@focus28ABCDabcd') as JwtPayload
+    // Handle "Bearer <token>" format
+    const token = authHeader.startsWith('Bearer ')
+      ? authHeader.split(' ')[1]
+      : authHeader
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload
 
     const user = await User.findByPk(decoded.userId)
     if (!user) {
@@ -32,7 +47,13 @@ export const authenticate = async (
       return
     }
 
-    req.user = user
+    req.user = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isPremium: decoded.ispremiumuser,
+    }
+
     next()
   } catch (err) {
     console.error('Auth error:', err)
