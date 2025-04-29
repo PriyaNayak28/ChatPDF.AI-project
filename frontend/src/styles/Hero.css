@@ -24,17 +24,55 @@
 }
 
 .sidebar-header {
-  margin-bottom: 2rem;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-name-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .user-name {
-  color: #fff;
-  font-size: 1.5rem;
-  margin: 0;
-  background: linear-gradient(135deg, #fff, #ccc);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.premium-star {
+  color: #FFD700;
+  font-size: 1rem;
+}
+
+.premium-tooltip {
+  position: absolute;
+  top: -2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 10;
+}
+
+.premium-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0.5rem;
+  border-style: solid;
+  border-color: #1f2937 transparent transparent transparent;
 }
 
 .sidebar-actions {
@@ -140,25 +178,22 @@
 }
 
 .premium-btn {
-  width: 100%;
-  padding: 0.8rem;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #a10050, #ff007a);
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  font-weight: 500;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #FF007A, #FF6B6B);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .premium-btn:hover {
-  background: linear-gradient(90deg, #ff007a, #a10050);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 0, 122, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* Main Content Styles */
