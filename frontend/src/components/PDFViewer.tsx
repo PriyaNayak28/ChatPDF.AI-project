@@ -38,7 +38,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdfUrl, pdfId }) => {
 
     setLoading(true)
     const userMessage: Message = { type: 'user', content: question }
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setQuestion('')
 
     try {
@@ -54,19 +54,20 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdfUrl, pdfId }) => {
       })
 
       const data = await response.json()
-      
+
       if (data.success) {
         const aiMessage: Message = { type: 'ai', content: data.data.answer }
-        setMessages(prev => [...prev, aiMessage])
+        setMessages((prev) => [...prev, aiMessage])
       } else {
         throw new Error(data.message)
       }
-    } catch (error) {
+    } catch {
       const errorMessage: Message = {
         type: 'ai',
-        content: 'Sorry, I encountered an error while processing your question.'
+        content:
+          'Sorry, I encountered an error while processing your question.',
       }
-      setMessages(prev => [...prev, errorMessage])
+      setMessages((prev) => [...prev, errorMessage])
     } finally {
       setLoading(false)
       scrollToBottom()
@@ -92,7 +93,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdfUrl, pdfId }) => {
         {numPages && (
           <div className="flex justify-center mt-4">
             <button
-              onClick={() => setPageNumber(prev => Math.max(prev - 1, 1))}
+              onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
               disabled={pageNumber <= 1}
               className="px-4 py-2 mr-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
             >
@@ -102,7 +103,9 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdfUrl, pdfId }) => {
               Page {pageNumber} of {numPages}
             </span>
             <button
-              onClick={() => setPageNumber(prev => Math.min(prev + 1, numPages))}
+              onClick={() =>
+                setPageNumber((prev) => Math.min(prev + 1, numPages))
+              }
               disabled={pageNumber >= numPages}
               className="px-4 py-2 ml-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
             >
@@ -160,4 +163,4 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ pdfUrl, pdfId }) => {
   )
 }
 
-export default PDFViewer 
+export default PDFViewer

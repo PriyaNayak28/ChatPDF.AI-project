@@ -8,6 +8,8 @@ import {
 import Navbar from './components/Navbar'
 import MainPage from './pages/MainPage'
 import Hero from './pages/Hero'
+import * as pdfjsLib from 'pdfjs-dist'
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
 
 const AppContent: React.FC = () => {
   const location = useLocation()
@@ -20,7 +22,6 @@ const AppContent: React.FC = () => {
         </h2>
       </div>
 
-      {/* Conditionally render Navbar */}
       {location.pathname !== '/Hero' && <Navbar />}
 
       <div className="fade-top" />
