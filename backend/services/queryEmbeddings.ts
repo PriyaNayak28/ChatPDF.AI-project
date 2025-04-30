@@ -1,10 +1,8 @@
-import pinecone from '../pinecone'
+import { pineconeIndex } from '../lib/pinecone'
 
 export const queryPinecone = async (embedding: number[], topK = 5) => {
   try {
-    const index = pinecone.Index('pdf-embeddings')
-
-    const result = await index.query({
+    const result = await pineconeIndex.query({
       vector: embedding,
       topK,
       includeMetadata: true,

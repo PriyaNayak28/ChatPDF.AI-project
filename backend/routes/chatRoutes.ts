@@ -3,6 +3,6 @@ import { askQuestion } from '../controllers/chatController'
 
 const router: Router = express.Router()
 
-router.post('/ask', (req, res) => askQuestion(req, res))
+router.post('/chat', (req, res) => askQuestion(req, res))
 
-export default router 
+export default router

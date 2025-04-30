@@ -1,9 +1,66 @@
+// import { DataTypes, Model } from 'sequelize'
+// import sequelize from '../util/database'
+
+// interface PDFAttributes {
+//   id: string
+//   userId: string
+//   filename: string
+//   originalName: string
+//   filePath: string
+//   uploadDate: Date
+// }
+
+// class PDF extends Model<PDFAttributes> implements PDFAttributes {
+//   public id!: string
+//   public userId!: string
+//   public filename!: string
+//   public originalName!: string
+//   public filePath!: string
+//   public uploadDate!: Date
+// }
+
+// PDF.init(
+//   {
+//     id: {
+//       type: DataTypes.INTEGER.UNSIGNED,
+//       defaultValue: DataTypes.UUIDV4,
+//       primaryKey: true,
+//     },
+//     userId: {
+//       type: DataTypes.INTEGER.UNSIGNED,
+//       allowNull: false,
+//     },
+//     filename: {
+//       type: DataTypes.STRING,
+//       allowNull: false,
+//     },
+//     originalName: {
+//       type: DataTypes.STRING,
+//       allowNull: false,
+//     },
+//     filePath: {
+//       type: DataTypes.STRING,
+//       allowNull: false,
+//     },
+//     uploadDate: {
+//       type: DataTypes.DATE,
+//       defaultValue: DataTypes.NOW,
+//     },
+//   },
+//   {
+//     sequelize,
+//     modelName: 'PDF',
+//   }
+// )
+
+// export default PDF
+
 import { DataTypes, Model } from 'sequelize'
 import sequelize from '../util/database'
 
 interface PDFAttributes {
   id: string
-  userId: string
+  userId: number
   filename: string
   originalName: string
   filePath: string
@@ -12,7 +69,7 @@ interface PDFAttributes {
 
 class PDF extends Model<PDFAttributes> implements PDFAttributes {
   public id!: string
-  public userId!: string
+  public userId!: number
   public filename!: string
   public originalName!: string
   public filePath!: string
@@ -27,7 +84,7 @@ PDF.init(
       primaryKey: true,
     },
     userId: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
     },
     filename: {
@@ -53,4 +110,4 @@ PDF.init(
   }
 )
 
-export default PDF 
+export default PDF

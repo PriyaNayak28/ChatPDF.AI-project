@@ -44,19 +44,15 @@ passport.use(
         const githubEmail =
           profile.emails?.[0]?.value || `no-email-${profile.id}@example.com`
 
-        // Step 1: Try to find by GitHub ID (fast path)
         let user = await User.findOne({ where: { githubId: profile.id } })
 
         if (!user) {
-          // Step 2: Try to find by email (maybe signed up with email/password)
           user = await User.findOne({ where: { email: githubEmail } })
 
           if (user) {
-            // 👉 Link GitHub ID to existing user
             user.githubId = profile.id
             await user.save()
           } else {
-            // Step 3: If no match at all, create a new user
             user = await User.create({
               githubId: profile.id,
               name: profile.displayName || profile.username,
@@ -77,7 +73,16 @@ passport.serializeUser((user: any, done) => {
   done(null, user.id)
 })
 
-passport.deserializeUser(async (id: number, done) => {
-  const user = await User.findByPk(id)
-  done(null, user)
+// passport.deserializeUser(async (id: number, done) => {
+//   const user = await User.findByPk(id)
+//   done(null, user)
+// })
+
+passport.deserializeUser(async (id: string, done) => {
+  try {
+    const user = await User.findByPk(id)
+    done(null, user)
+  } catch (err) {
+    done(err as Error, null)
+  }
 })

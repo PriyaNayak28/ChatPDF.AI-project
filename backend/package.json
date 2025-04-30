@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
-    "start": "ts-node app.ts"
+    "start": "ts-node app.ts",
+    "setup-pinecone": "ts-node scripts/setupPinecone.ts"
   },
   "keywords": [],
   "author": "",

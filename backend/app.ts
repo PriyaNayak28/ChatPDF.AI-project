@@ -13,11 +13,14 @@ import userRoutes from './routes/user'
 import premiumRoutes from './routes/premium'
 import authRoutes from './routes/auth'
 import chatRoutes from './routes/chatRoutes'
-import { embedText } from './util/pinecone'
+import { embedText } from './util/embedding'
 import dotenv from 'dotenv'
 import PDF from './models/pdf'
 import { v4 as uuidv4 } from 'uuid'
 import { storeEmbeddingsToPinecone } from './services/storeEmbeddings'
+import { setupAssociations } from './models/associate'
+import { authenticate } from './middleware/auth'
+setupAssociations()
 
 dotenv.config()
 
@@ -50,7 +53,7 @@ app.use(express.static(path.join(__dirname, 'views')))
 app.use('/user', userRoutes)
 app.use('/auth', authRoutes)
 app.use('/premium', premiumRoutes)
-app.use('/api/chat', chatRoutes)
+app.use('/ask', chatRoutes)
 
 import sequelize from './util/database'
 import User from './models/user'
@@ -78,7 +81,7 @@ function chunkText(
   return chunks
 }
 
-app.post('/upload', upload.single('pdf'), async (req, res) => {
+app.post('/upload', authenticate, upload.single('pdf'), async (req, res) => {
   try {
     if (!req.file) {
       res.status(400).json({ message: 'No file uploaded' })
@@ -86,8 +89,9 @@ app.post('/upload', upload.single('pdf'), async (req, res) => {
     }
 
     const userId = req.user?.id
+    console.log(userId, 'userID')
     if (!userId) {
-      res.status(401).json({ message: 'User not authenticated' })
+      res.status(401).json({ message: 'User not authenticated post' })
       return
     }
 
@@ -104,19 +108,20 @@ app.post('/upload', upload.single('pdf'), async (req, res) => {
 
     const pdf = await PDF.create({
       id: uuidv4(),
-      userId: userId.toString(),
+      userId: userId,
       filename: req.file.filename,
       originalName: req.file.originalname,
       filePath: req.file.path,
       uploadDate: new Date(),
     })
 
-    await storeEmbeddingsToPinecone(
-      pdf.id,
-      userId.toString(),
-      chunks,
-      embeddings
-    )
+    // await storeEmbeddingsToPinecone(
+    //   pdf.id,
+    //   userId.toString(),
+    //   chunks,
+    //   embeddings
+    // )
+    await storeEmbeddingsToPinecone(pdf.id, userId.toString(), chunks)
 
     res.json({
       success: true,
@@ -125,9 +130,19 @@ app.post('/upload', upload.single('pdf'), async (req, res) => {
         message: 'PDF uploaded and processed successfully',
       },
     })
+    // } catch (error) {
+    //   console.error('Error:', error)
+    //   res.status(500).json({ message: 'Error processing PDF' })
+    // }
   } catch (error) {
-    console.error('Error:', error)
-    res.status(500).json({ message: 'Error processing PDF' })
+    console.error('Error processing PDF:', error)
+
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error'
+
+    res
+      .status(500)
+      .json({ message: 'Error processing PDF', error: errorMessage })
   }
 })
 
@@ -135,7 +150,7 @@ app.get('/pdfs', async (req, res) => {
   try {
     const userId = req.user?.id
     if (!userId) {
-      res.status(401).json({ message: 'User not authenticated' })
+      res.status(401).json({ message: 'User not authenticated get' })
       return
     }
 
@@ -151,6 +166,16 @@ app.get('/pdfs', async (req, res) => {
   } catch (error) {
     console.error('Error fetching PDFs:', error)
     res.status(500).json({ message: 'Error fetching PDFs' })
+  }
+})
+
+app.get('/pdf/:filename', authenticate, (req, res) => {
+  const filename = decodeURIComponent(req.params.filename)
+  const filePath = path.join(__dirname, 'uploads', filename)
+  if (fs.existsSync(filePath)) {
+    res.sendFile(filePath)
+  } else {
+    res.status(404).send('File not found')
   }
 })
 

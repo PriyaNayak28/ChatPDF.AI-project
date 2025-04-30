@@ -1,6 +1,6 @@
 import OpenAI from 'openai'
 import { queryPinecone } from './queryEmbeddings'
-import { embedText } from '../util/pinecone'
+import { embedText } from '../util/embedding'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

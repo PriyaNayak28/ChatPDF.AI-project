@@ -11,10 +11,7 @@ interface OrderAttributes {
   status?: string
 }
 
-// For fields that are optional when creating a new record
 interface OrderCreationAttributes extends Optional<OrderAttributes, 'id'> {}
-
-// Define the Order model extending Sequelize's Model class
 class Order
   extends Model<OrderAttributes, OrderCreationAttributes>
   implements OrderAttributes
@@ -24,12 +21,10 @@ class Order
   public orderid?: string
   public status?: string
 
-  // timestamps
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 }
 
-// Initialize the model
 Order.init(
   {
     id: {
