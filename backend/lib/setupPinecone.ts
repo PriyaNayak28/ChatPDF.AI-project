@@ -1,35 +1,47 @@
 import { Pinecone } from '@pinecone-database/pinecone'
 
+if (!process.env.PINECONE_API_KEY) {
+  throw new Error('PINECONE_API_KEY is not set')
+}
+
+if (!process.env.PINECONE_INDEX_NAME) {
+  throw new Error('PINECONE_INDEX_NAME is not set')
+}
+
 const pinecone = new Pinecone({
-  apiKey: process.env.PINECONE_API_KEY!,
+  apiKey: process.env.PINECONE_API_KEY,
 })
 
 export async function setupPineconeIndex() {
   try {
-    // Delete existing index if it exists
-    try {
-      await pinecone.deleteIndex(process.env.PINECONE_INDEX_NAME!)
-      console.log('Deleted existing index')
-    } catch (error) {
-      console.log('No existing index to delete')
-    }
+    const indexName = process.env.PINECONE_INDEX_NAME!
+    const existingIndexes = await pinecone.listIndexes()
+    const indexExists = existingIndexes.indexes?.some(
+      (index: { name: string }) => index.name === indexName
+    )
 
-    // Create new index with correct dimension
+    if (indexExists) {
+      console.log(`Index ${indexName} already exists`)
+      return
+    }
     await pinecone.createIndex({
-      name: process.env.PINECONE_INDEX_NAME!,
-      dimension: 384, // Match the dimension of all-MiniLM-L6-v2 embeddings
+      name: indexName,
+      dimension: 384,
       metric: 'cosine',
       spec: {
         serverless: {
           cloud: 'aws',
-          region: 'us-west-2',
+          // region: 'us-west-2',
+          region: 'us-east-1',
         },
       },
     })
 
-    console.log('Created new index with dimension 384')
+    console.log(`Created new index: ${indexName}`)
   } catch (error) {
     console.error('Error setting up Pinecone index:', error)
-    throw error
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error occurred'
+    throw new Error(`Failed to setup Pinecone index: ${errorMessage}`)
   }
-} 
+}

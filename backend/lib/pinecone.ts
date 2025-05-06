@@ -11,14 +11,13 @@ if (!process.env.PINECONE_INDEX_NAME) {
 export const pinecone = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY,
 })
-
-// Get the index with error handling
 export const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME)
 
-// Verify index configuration
 export async function verifyIndexConfiguration() {
   try {
-    const indexDescription = await pinecone.describeIndex(process.env.PINECONE_INDEX_NAME!)
+    const indexDescription = await pinecone.describeIndex(
+      process.env.PINECONE_INDEX_NAME!
+    )
     console.log('Current index configuration:', indexDescription)
     return indexDescription
   } catch (error) {

@@ -1,9 +1,6 @@
-// models/Order.ts
-
 import { DataTypes, Model, Optional } from 'sequelize'
 import sequelize from '../util/database'
 
-// Define the attributes for the Order model
 interface OrderAttributes {
   id: number
   paymentid?: string

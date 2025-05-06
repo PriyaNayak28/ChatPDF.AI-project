@@ -1,16 +1,23 @@
-import OpenAI from 'openai'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import { queryPinecone } from './queryEmbeddings'
 import { embedText } from '../util/embedding'
+import 'dotenv/config'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' })
 
 export const getChatResponse = async (question: string, pdfId: string) => {
   try {
-    const questionEmbedding = await embedText(question)
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error('Gemini API key is not configured')
+    }
 
+    const questionEmbedding = await embedText(question)
     const relevantChunks = await queryPinecone(questionEmbedding, 3)
+
+    if (!relevantChunks || relevantChunks.length === 0) {
+      throw new Error('No relevant content found in the PDF')
+    }
 
     const context = relevantChunks
       .map((chunk: any) => chunk.metadata.text)
@@ -23,25 +30,26 @@ ${context}
 
 Question: ${question}`
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content:
-            'You are a helpful assistant that answers questions based on the provided context from PDF documents.',
-        },
+    const result = await model.generateContent({
+      contents: [
         {
           role: 'user',
-          content: prompt,
+          parts: [{ text: prompt }],
         },
       ],
-      temperature: 0.7,
-      max_tokens: 500,
     })
 
+    if (!result.response) {
+      throw new Error('No response received from Gemini AI')
+    }
+
+    const text = result.response.text()
+    if (!text) {
+      throw new Error('Empty response received from Gemini AI')
+    }
+
     return {
-      answer: completion.choices[0].message?.content,
+      answer: text,
       context: relevantChunks.map((chunk: any) => ({
         text: chunk.metadata.text,
         score: chunk.score,

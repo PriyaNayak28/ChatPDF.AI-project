@@ -7,6 +7,7 @@ import passport from 'passport'
 import multer from 'multer'
 import fs from 'fs'
 import pdfParse from 'pdf-parse'
+import dotenv from 'dotenv'
 
 import './passport/github'
 import userRoutes from './routes/user'
@@ -14,30 +15,31 @@ import premiumRoutes from './routes/premium'
 import authRoutes from './routes/auth'
 import chatRoutes from './routes/chatRoutes'
 import { embedText } from './util/embedding'
-import dotenv from 'dotenv'
 import PDF from './models/pdf'
 import { v4 as uuidv4 } from 'uuid'
 import { storeEmbeddingsToPinecone } from './services/storeEmbeddings'
 import { setupAssociations } from './models/associate'
 import { authenticate } from './middleware/auth'
-setupAssociations()
+import sequelize from './util/database'
+import User from './models/user'
 
 dotenv.config()
+setupAssociations()
 
 declare global {
   namespace Express {
     interface Request {
       file?: Express.Multer.File
+      user?: User | undefined
     }
   }
 }
-
-dotenv.config()
 
 const app: Application = express()
 
 app.use(cors({ origin: '*', credentials: true }))
 app.use(bodyParser.json())
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'secret_key',
@@ -45,6 +47,7 @@ app.use(
     saveUninitialized: false,
   })
 )
+
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -55,15 +58,13 @@ app.use('/auth', authRoutes)
 app.use('/premium', premiumRoutes)
 app.use('/ask', chatRoutes)
 
-import sequelize from './util/database'
-import User from './models/user'
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/')
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname)
+    const uniqueName = Date.now() + '-' + file.originalname
+    cb(null, uniqueName)
   },
 })
 const upload = multer({ storage })
@@ -81,92 +82,82 @@ function chunkText(
   return chunks
 }
 
-app.post('/upload', authenticate, upload.single('pdf'), async (req, res) => {
-  try {
-    if (!req.file) {
-      res.status(400).json({ message: 'No file uploaded' })
-      return
+app.post('/upload', authenticate, upload.single('pdf'), (req, res, next) => {
+  ;(async () => {
+    try {
+      if (!req.file) {
+        res.status(400).json({ message: 'No file uploaded' })
+        return
+      }
+
+      const userId = req.user?.id
+      if (!userId) {
+        res.status(401).json({ message: 'User not authenticated' })
+        return
+      }
+
+      const filePath = req.file.path
+      const dataBuffer = fs.readFileSync(filePath)
+      const pdfData = await pdfParse(dataBuffer)
+      const extractedText = pdfData.text
+
+      const chunks = chunkText(extractedText, 500, 50)
+      const embeddings = await Promise.all(
+        chunks.map((chunk) => embedText(chunk))
+      )
+
+      const pdf = await PDF.create({
+        id: uuidv4(),
+        userId: userId,
+        storedFilename: req.file.filename,
+        originalFilename: req.file.originalname,
+        filePath: req.file.path,
+        uploadDate: new Date(),
+      })
+
+      await storeEmbeddingsToPinecone(pdf.id, userId.toString(), chunks)
+
+      res.json({
+        success: true,
+        data: {
+          pdfId: pdf.id,
+          message: 'PDF uploaded and processed successfully',
+        },
+      })
+    } catch (error) {
+      console.error('Error processing PDF:', error)
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error'
+      res
+        .status(500)
+        .json({ message: 'Error processing PDF', error: errorMessage })
     }
-
-    const userId = req.user?.id
-    console.log(userId, 'userID')
-    if (!userId) {
-      res.status(401).json({ message: 'User not authenticated post' })
-      return
-    }
-
-    const filePath = req.file.path
-    const dataBuffer = fs.readFileSync(filePath)
-    const pdfData = await pdfParse(dataBuffer)
-
-    const extractedText = pdfData.text
-    const chunks = chunkText(extractedText, 500, 50)
-
-    const embeddings = await Promise.all(
-      chunks.map((chunk) => embedText(chunk))
-    )
-
-    const pdf = await PDF.create({
-      id: uuidv4(),
-      userId: userId,
-      filename: req.file.filename,
-      originalName: req.file.originalname,
-      filePath: req.file.path,
-      uploadDate: new Date(),
-    })
-
-    // await storeEmbeddingsToPinecone(
-    //   pdf.id,
-    //   userId.toString(),
-    //   chunks,
-    //   embeddings
-    // )
-    await storeEmbeddingsToPinecone(pdf.id, userId.toString(), chunks)
-
-    res.json({
-      success: true,
-      data: {
-        pdfId: pdf.id,
-        message: 'PDF uploaded and processed successfully',
-      },
-    })
-    // } catch (error) {
-    //   console.error('Error:', error)
-    //   res.status(500).json({ message: 'Error processing PDF' })
-    // }
-  } catch (error) {
-    console.error('Error processing PDF:', error)
-
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error'
-
-    res
-      .status(500)
-      .json({ message: 'Error processing PDF', error: errorMessage })
-  }
+  })().catch(next)
 })
 
-app.get('/pdfs', async (req, res) => {
-  try {
-    const userId = req.user?.id
-    if (!userId) {
-      res.status(401).json({ message: 'User not authenticated get' })
-      return
+app.get('/pdfs', authenticate, (req, res, next) => {
+  ;(async () => {
+    try {
+      const userId = req.user?.id
+      if (!userId) {
+        res.status(401).json({ message: 'User not authenticated' })
+        return
+      }
+
+      const pdfs = await PDF.findAll({
+        where: { userId },
+        order: [['uploadDate', 'DESC']],
+      })
+
+      res.json({
+        success: true,
+        data: pdfs,
+      })
+    } catch (error) {
+      console.error('Error fetching PDFs:', error)
+      res.status(500).json({ message: 'Error fetching PDFs' })
     }
-
-    const pdfs = await PDF.findAll({
-      where: { userId },
-      order: [['uploadDate', 'DESC']],
-    })
-
-    res.json({
-      success: true,
-      data: pdfs,
-    })
-  } catch (error) {
-    console.error('Error fetching PDFs:', error)
-    res.status(500).json({ message: 'Error fetching PDFs' })
-  }
+  })().catch(next)
 })
 
 app.get('/pdf/:filename', authenticate, (req, res) => {

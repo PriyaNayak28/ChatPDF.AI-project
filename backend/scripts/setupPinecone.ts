@@ -6,7 +6,6 @@ dotenv.config()
 
 async function main() {
   try {
-    // First, verify current index configuration
     try {
       const currentConfig = await verifyIndexConfiguration()
       console.log('Current index configuration:', currentConfig)
@@ -14,13 +13,11 @@ async function main() {
       console.log('No existing index found, will create new one')
     }
 
-    // Setup new index
     await setupPineconeIndex()
-    
-    // Verify the new configuration
+
     const newConfig = await verifyIndexConfiguration()
     console.log('New index configuration:', newConfig)
-    
+
     console.log('Pinecone setup completed successfully')
     process.exit(0)
   } catch (error) {
@@ -29,4 +26,4 @@ async function main() {
   }
 }
 
-main() 
+main()

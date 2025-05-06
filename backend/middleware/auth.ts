@@ -34,7 +34,6 @@ export const authenticate = async (
       return
     }
 
-    // Handle "Bearer <token>" format
     const token = authHeader.startsWith('Bearer ')
       ? authHeader.split(' ')[1]
       : authHeader
