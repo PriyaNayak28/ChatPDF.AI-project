@@ -10,7 +10,6 @@
   );
 }
 
-/* Sidebar Styles */
 .sidebar {
   width: 300px;
   background: rgba(33, 23, 32, 0.95);
@@ -41,7 +40,7 @@
 .user-name {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1f2937;
+  color: #ede8eb;
 }
 
 .premium-star {

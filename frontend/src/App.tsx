@@ -4,12 +4,21 @@ import {
   Routes,
   Route,
   useLocation,
+  Navigate,
 } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import MainPage from './pages/MainPage'
 import Hero from './pages/Hero'
 import * as pdfjsLib from 'pdfjs-dist'
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+import PdfChat from './components/PdfChat'
+
+const PrivateRoute: React.FC<{ element: React.ReactElement }> = ({
+  element,
+}) => {
+  const token = localStorage.getItem('token')
+  return token ? element : <Navigate to="/" replace />
+}
 
 const AppContent: React.FC = () => {
   const location = useLocation()
@@ -27,8 +36,12 @@ const AppContent: React.FC = () => {
       <div className="fade-top" />
 
       <Routes>
-        <Route path="/*" element={<MainPage />} />
-        <Route path="/Hero" element={<Hero />} />
+        <Route path="/" element={<MainPage />} />
+        <Route path="/Hero" element={<PrivateRoute element={<Hero />} />} />
+        <Route
+          path="/chat/:storedFilename"
+          element={<PrivateRoute element={<PdfChat />} />}
+        />
       </Routes>
     </>
   )
