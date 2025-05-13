@@ -15,7 +15,7 @@ const Hero: React.FC = () => {
   const [newFolderName, setNewFolderName] = useState('')
   const [user, setUser] = useState<User | null>(null)
   const [showPremiumTooltip, setShowPremiumTooltip] = useState(false)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  // const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [pdfList, setPdfList] = useState<
     { storedFilename: string; originalFilename: string }[]
   >([])
@@ -93,7 +93,7 @@ const Hero: React.FC = () => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file && file.type === 'application/pdf') {
-      setSelectedFile(file)
+      // setSelectedFile(file)
       setChats([...chats, file.name])
       await uploadPdf(file)
     }
@@ -111,6 +111,18 @@ const Hero: React.FC = () => {
         },
       })
       console.log('Upload response:', res.data)
+      const pdfListResponse = await axios.get('http://localhost:5000/pdfs', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      console.log('PDF List Response after upload:', pdfListResponse.data)
+      if (Array.isArray(pdfListResponse.data)) {
+        setPdfList(pdfListResponse.data)
+      } else if (
+        pdfListResponse.data.data &&
+        Array.isArray(pdfListResponse.data.data)
+      ) {
+        setPdfList(pdfListResponse.data.data)
+      }
     } catch (err) {
       console.error('Error uploading PDF:', err)
     }

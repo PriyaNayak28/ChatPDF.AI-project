@@ -88,7 +88,7 @@ const PdfChat: React.FC = () => {
     const token = localStorage.getItem('token')
     try {
       const res = await axios.post(
-        'http://localhost:5000/ask/chat',
+        'http://localhost:5000/groq/prompt',
         {
           pdfId: storedFilename,
           question: query,

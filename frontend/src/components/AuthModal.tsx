@@ -28,7 +28,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
       if (isSignup) {
         await axios.post('http://localhost:5000/user/signup', formData)
         alert('User signed up successfully!')
-        setIsSignup(false) // Switch to Sign In
+        setIsSignup(false)
         setFormData({ name: '', email: '', password: '' })
         return
       }
@@ -51,10 +51,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
         alert('Something went wrong')
       }
     }
-  }
-
-  const handleGitHubLogin = () => {
-    window.location.href = 'http://localhost:5000/auth/github'
   }
 
   return (
@@ -97,9 +93,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
           {isSignup ? 'Already have an account? Sign In' : 'New user? Sign Up'}
         </button>
         <hr />
-        <button className="github-btn" onClick={handleGitHubLogin}>
-          Sign In with GitHub
-        </button>
       </div>
     </div>
   )
