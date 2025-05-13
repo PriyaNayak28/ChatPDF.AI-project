@@ -38,12 +38,8 @@ const generateAccessToken = async (
   name: string,
   ispremiumuser: boolean
 ): Promise<string> => {
-  const user = await User.findByPk(id);
-  if (!user) {
-    throw new Error('User not found');
-  }
   return jwt.sign(
-    { userId: id, name, ispremiumuser: user.isPremium },
+    { userId: id, name, ispremiumuser },
     process.env.JWT_SECRET || '#@focus28ABCDabcd'
   );
 }
