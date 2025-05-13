@@ -1,6 +1,6 @@
 import Razorpay from 'razorpay'
 import { Request, Response } from 'express'
-import Order from '../models/Order'
+import Order from '../models/order'
 import User from '../models/user'
 import * as userController from './user'
 import { LocalCustomRequest } from '../types/customRequest'

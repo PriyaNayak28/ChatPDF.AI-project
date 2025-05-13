@@ -1,45 +1,27 @@
-import { pipeline } from '@xenova/transformers'
+const { CohereClient } = require('cohere-ai')
 
-let extractor: any
-
-export async function loadEmbedder() {
-  if (!extractor) {
-    extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2')
-  }
-  return extractor
+if (!process.env.COHERE_API_KEY) {
+  throw new Error('COHERE_API_KEY environment variable is not set')
 }
 
+const cohere = new CohereClient({
+  token: process.env.COHERE_API_KEY,
+})
+
 export async function embedText(text: string): Promise<number[]> {
-  try {
-    const embedder = await loadEmbedder()
-    const output = await embedder(text, {
-      pooling: 'mean',
-      normalize: true,
-    })
+  const response = await cohere.embed({
+    texts: [text],
+    model: 'embed-english-light-v3.0',
+    input_type: 'search_document',
+  })
 
-    let vector: number[]
-    if (Array.isArray(output.data)) {
-      vector = output.data.map(Number)
-    } else if (output.data && typeof output.data === 'object') {
-      const values = Object.values(output.data)
-      vector = values.flat().map(Number)
-    } else {
-      throw new Error('Unexpected embedding format')
-    }
-
-    if (
-      !Array.isArray(vector) ||
-      vector.length === 0 ||
-      vector.some((v) => typeof v !== 'number' || isNaN(v))
-    ) {
-      throw new Error('Invalid embedding format')
-    }
-
-    return vector
-  } catch (error) {
-    console.error('Error generating embedding:', error)
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error occurred'
-    throw new Error(`Failed to generate embedding: ${errorMessage}`)
+  if (
+    !response.embeddings ||
+    !Array.isArray(response.embeddings) ||
+    response.embeddings.length === 0
+  ) {
+    throw new Error('Invalid response format from Cohere API')
   }
+
+  return response.embeddings[0]
 }

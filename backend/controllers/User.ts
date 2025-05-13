@@ -33,12 +33,19 @@ const signup = async (req: Request, res: Response): Promise<void> => {
   }
 }
 
-const generateAccessToken = (
+const generateAccessToken = async (
   id: number,
   name: string,
   ispremiumuser: boolean
-): string => {
-  return jwt.sign({ userId: id, name, ispremiumuser }, '#@focus28ABCDabcd')
+): Promise<string> => {
+  const user = await User.findByPk(id);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  return jwt.sign(
+    { userId: id, name, ispremiumuser: user.isPremium },
+    process.env.JWT_SECRET || '#@focus28ABCDabcd'
+  );
 }
 
 const login = async (req: Request, res: Response): Promise<void> => {
@@ -59,7 +66,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
       const isMatch = await bcrypt.compare(password, user.password)
 
       if (isMatch) {
-        const token = generateAccessToken(user.id, user.name, user.isPremium)
+        const token = await generateAccessToken(user.id, user.name, user.isPremium)
         res.status(200).json({
           success: true,
           message: 'User Logged in successfully',

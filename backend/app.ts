@@ -3,17 +3,14 @@ import path from 'path'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import session from 'express-session'
-import passport from 'passport'
 import multer from 'multer'
 import fs from 'fs'
 import pdfParse from 'pdf-parse'
 import dotenv from 'dotenv'
-
-import './passport/github'
+import passport from 'passport'
 import userRoutes from './routes/user'
 import premiumRoutes from './routes/premium'
-import authRoutes from './routes/auth'
-import chatRoutes from './routes/chatRoutes'
+import chatRoutes from './routes/chat'
 import { embedText } from './util/embedding'
 import PDF from './models/pdf'
 import { v4 as uuidv4 } from 'uuid'
@@ -47,16 +44,14 @@ app.use(
     saveUninitialized: false,
   })
 )
-
 app.use(passport.initialize())
 app.use(passport.session())
 
 app.use(express.static(path.join(__dirname, 'views')))
 
 app.use('/user', userRoutes)
-app.use('/auth', authRoutes)
 app.use('/premium', premiumRoutes)
-app.use('/ask', chatRoutes)
+app.use('/groq', chatRoutes)
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -71,8 +66,8 @@ const upload = multer({ storage })
 
 function chunkText(
   text: string,
-  chunkSize: number = 500,
-  overlap: number = 50
+  chunkSize: number = 1000,
+  overlap: number = 100
 ): string[] {
   const chunks: string[] = []
   for (let i = 0; i < text.length; i += chunkSize - overlap) {
@@ -101,7 +96,7 @@ app.post('/upload', authenticate, upload.single('pdf'), (req, res, next) => {
       const pdfData = await pdfParse(dataBuffer)
       const extractedText = pdfData.text
 
-      const chunks = chunkText(extractedText, 500, 50)
+      const chunks = chunkText(extractedText, 1000, 100)
       const embeddings = await Promise.all(
         chunks.map((chunk) => embedText(chunk))
       )
