@@ -25,29 +25,41 @@ const purchasepremium = async (
 
     const amount = 25000
 
-    rzp.orders.create({ amount, currency: 'INR' }, async (err, order) => {
-      if (err) {
-        console.error('Razorpay error:', err)
-        res.status(500).json({ message: 'Failed to create order' })
-        return
+    interface RazorpayOrder {
+      id: string
+      entity: string
+      amount: number
+      currency: string
+      status: string
+      [key: string]: any
+    }
+
+    interface RazorpayError {
+      message: string
+      description?: string
+      field?: string
+      [key: string]: any
+    }
+
+    try {
+      const order = await rzp.orders.create({ amount, currency: 'INR' })
+
+      if (!order || !order.id) {
+        throw new Error('Order not created')
       }
 
-      try {
-        if (!order || !order.id) {
-          throw new Error('Order not created')
-        }
+      await Order.create({
+        orderid: order.id,
+        status: 'PENDING',
+      })
 
-        await Order.create({
-          orderid: order.id,
-          status: 'PENDING',
-        })
-
-        res.status(201).json({ order, key_id: process.env.RAZORPAY_KEY_ID })
-      } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: 'Failed to save order', error })
-      }
-    })
+      res.status(201).json({ order, key_id: process.env.RAZORPAY_KEY_ID })
+    } catch (err) {
+      console.error('Razorpay error:', err)
+      res
+        .status(500)
+        .json({ message: 'Failed to create or save order', error: err })
+    }
   } catch (err) {
     console.error(err)
     res.status(403).json({ message: 'Something went wrong', error: err })

@@ -20,7 +20,7 @@ export const getChatResponse = async (question: string, pdfId: string) => {
       console.log('First chunk score:', relevantChunks[0].score)
       console.log('First chunk text:', relevantChunks[0].metadata.text)
     }
-    
+
     const context = relevantChunks
       .map((chunk: any) => chunk.metadata.text)
       .join('\n\n')
@@ -71,7 +71,11 @@ Please provide your answer:`
     )
     console.log('response.data', response.data)
 
-    const text = response.data.choices[0]?.message?.content
+    type GroqResponse = {
+      choices: { message: { content: string } }[]
+    }
+
+    const text = (response.data as GroqResponse).choices[0]?.message?.content
 
     if (!text) {
       throw new Error('Empty response received from Groq API')
