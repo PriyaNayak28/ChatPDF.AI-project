@@ -26,7 +26,7 @@ const Hero: React.FC = () => {
       try {
         const token = localStorage.getItem('token')
         const response = await axios.get(
-          'http://chatpdf-ai-5.onrender.com/user/profile',
+          'https://chatpdf-ai-5.onrender.com/user/profile',
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -42,7 +42,7 @@ const Hero: React.FC = () => {
       try {
         const token = localStorage.getItem('token')
         const response = await axios.get(
-          'http://chatpdf-ai-5.onrender.com/pdfs',
+          'https://chatpdf-ai-5.onrender.com/pdfs',
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -111,7 +111,7 @@ const Hero: React.FC = () => {
     const token = localStorage.getItem('token')
     try {
       const res = await axios.post(
-        'http://chatpdf-ai-5.onrender.com/upload',
+        'https://chatpdf-ai-5.onrender.com/upload',
         formData,
         {
           headers: {
@@ -122,7 +122,7 @@ const Hero: React.FC = () => {
       )
       console.log('Upload response:', res.data)
       const pdfListResponse = await axios.get(
-        'http://chatpdf-ai-5.onrender.com/pdfs',
+        'https://chatpdf-ai-5.onrender.com/pdfs',
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -149,7 +149,7 @@ const Hero: React.FC = () => {
     try {
       const token = localStorage.getItem('token')
       const response = await axios.get(
-        'http://chatpdf-ai-5.onrender.com/premium/premiummembership',
+        'https://chatpdf-ai-5.onrender.com/premium/premiummembership',
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -170,7 +170,7 @@ const Hero: React.FC = () => {
         }) => {
           try {
             await axios.post(
-              'http://chatpdf-ai-5.onrender.com/premium/updatetransactionstatus',
+              'https://chatpdf-ai-5.onrender.com/premium/updatetransactionstatus',
               {
                 payment_id: response.razorpay_payment_id,
                 order_id: response.razorpay_order_id,

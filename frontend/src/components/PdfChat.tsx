@@ -50,7 +50,7 @@ const PdfChat: React.FC = () => {
         }
 
         const res = await axios.get(
-          `http://chatpdf-ai-5.onrender.com/pdf/${encodeURIComponent(
+          `https://chatpdf-ai-5.onrender.com/pdf/${encodeURIComponent(
             storedFilename!
           )}`,
           {
@@ -90,7 +90,7 @@ const PdfChat: React.FC = () => {
     const token = localStorage.getItem('token')
     try {
       const res = await axios.post(
-        'http://chatpdf-ai-5.onrender.com/groq/prompt',
+        'https://chatpdf-ai-5.onrender.com/groq/prompt',
         {
           pdfId: storedFilename,
           question: query,

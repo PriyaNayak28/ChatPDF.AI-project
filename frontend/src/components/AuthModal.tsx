@@ -38,7 +38,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
       }
 
       const res = await axios.post(
-        'http://chatpdf-ai-5.onrender.com/user/login',
+        'https://chatpdf-ai-5.onrender.com/user/login',
         {
           email: formData.email,
           password: formData.password,
