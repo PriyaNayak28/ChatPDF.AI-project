@@ -12,7 +12,7 @@ const Navbar: React.FC = () => {
 
       // Get all sections
       const sections = ['home', 'about', 'features']
-      const scrollPosition = window.scrollY + window.innerHeight / 2 // Center of viewport
+      const scrollPosition = window.scrollY + window.innerHeight / 2
 
       // Find the section in view
       let currentSection = 'home'

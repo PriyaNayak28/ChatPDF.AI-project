@@ -17,7 +17,7 @@ interface Message {
 }
 
 const PdfChat: React.FC = () => {
-  const { storedFilename } = useParams<{ storedFilename: string }>()
+  const { pdfId } = useParams<{ pdfId: string }>()
   const defaultLayoutPluginInstance = defaultLayoutPlugin({
     sidebarTabs: () => [],
     toolbarPlugin: {
@@ -49,24 +49,19 @@ const PdfChat: React.FC = () => {
           throw new Error('Authentication token not found')
         }
 
-        const res = await axios.get(
-          `https://chatpdf-ai-5.onrender.com/pdf/${encodeURIComponent(
-            storedFilename!
-          )}`,
-          {
-            responseType: 'blob',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+        const res = await axios.get(`http://localhost:5000/pdf/${pdfId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        console.log('Response from server:', res.data)
 
-        if (!res.data) {
+        if (!res.data.success) {
           throw new Error('Failed to load PDF')
         }
 
-        const blobUrl = URL.createObjectURL(res.data)
-        setPdfUrl(blobUrl)
+        // The PDF URL is now coming from Cloudinary
+        setPdfUrl(res.data.data.url)
       } catch (error: unknown) {
         console.error('Error fetching PDF:', error)
         if (error instanceof Error) {
@@ -79,10 +74,10 @@ const PdfChat: React.FC = () => {
       }
     }
 
-    if (storedFilename) {
+    if (pdfId) {
       fetchPdf()
     }
-  }, [storedFilename])
+  }, [pdfId])
 
   const handleSendQuery = async () => {
     if (!query.trim()) return
@@ -90,9 +85,9 @@ const PdfChat: React.FC = () => {
     const token = localStorage.getItem('token')
     try {
       const res = await axios.post(
-        'https://chatpdf-ai-5.onrender.com/groq/prompt',
+        'http://localhost:5000/groq/prompt',
         {
-          pdfId: storedFilename,
+          pdfId: pdfId,
           question: query,
         },
         {
@@ -101,12 +96,14 @@ const PdfChat: React.FC = () => {
           },
         }
       )
+      console.log('Response from server:', res.data)
 
       if (!res.data.success) {
         throw new Error(res.data.message || 'Failed to get response')
       }
 
       const answer = res.data.data.answer
+      console.log('Answer from server:', answer)
       if (!answer) {
         throw new Error('Received empty response from server')
       }

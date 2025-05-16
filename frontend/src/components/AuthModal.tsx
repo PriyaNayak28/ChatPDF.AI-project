@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import '../styles/AuthModal.css'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
@@ -14,8 +14,25 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
     email: '',
     password: '',
   })
+  const modalRef = useRef<HTMLDivElement>(null)
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        onClose()
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [onClose])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -23,31 +40,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
     try {
       if (isSignup) {
-        // await axios.post('http://localhost:5000/user/signup', formData)
-        await axios.post(
-          'https://chatpdf-ai-5.onrender.com/user/signup',
-          formData
-        )
+        await axios.post('http://localhost:5000/user/signup', formData)
         alert('User signed up successfully!')
         setIsSignup(false)
         setFormData({ name: '', email: '', password: '' })
         return
       }
 
-      const res = await axios.post(
-        'https://chatpdf-ai-5.onrender.com/user/login',
-        {
-          email: formData.email,
-          password: formData.password,
-        }
-      )
+      const res = await axios.post('http://localhost:5000/user/login', {
+        email: formData.email,
+        password: formData.password,
+      })
 
       const token = res.data.token
       localStorage.setItem('token', token)
-
       alert('Logged in successfully!')
       onClose()
       navigate('/Hero')
@@ -62,11 +70,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
 
   return (
     <div className="modal-overlay">
-      <div className="auth-modal">
-        <button className="close-btn" onClick={onClose}>
-          ×
-        </button>
-        <h2>{isSignup ? 'Sign Up' : 'Sign In'}</h2>
+      <div
+        ref={modalRef}
+        className={`auth-modal ${isSignup ? 'signup-mode' : 'signin-mode'}`}
+      >
+        <h1 className="app-logo">
+          ChatPdf<span className="white-text">.AI</span>
+        </h1>
+
         <form onSubmit={handleSubmit}>
           {isSignup && (
             <input
@@ -76,6 +87,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
               value={formData.name}
               onChange={handleChange}
               required
+              className="glow-input"
             />
           )}
           <input
@@ -85,6 +97,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
             value={formData.email}
             onChange={handleChange}
             required
+            className="glow-input"
           />
           <input
             type="password"
@@ -93,13 +106,27 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
             value={formData.password}
             onChange={handleChange}
             required
+            className="glow-input"
           />
-          <button type="submit">{isSignup ? 'Sign Up' : 'Sign In'}</button>
+          <div className="button-row">
+            <button
+              type="submit"
+              className={isSignup ? 'gradient-btn' : 'black-btn'}
+            >
+              Sign Up
+            </button>
+            <button
+              type="submit"
+              className={!isSignup ? 'gradient-btn' : 'black-btn'}
+            >
+              Sign In
+            </button>
+          </div>
         </form>
+
         <button className="switch-mode" onClick={() => setIsSignup(!isSignup)}>
           {isSignup ? 'Already have an account? Sign In' : 'New user? Sign Up'}
         </button>
-        <hr />
       </div>
     </div>
   )

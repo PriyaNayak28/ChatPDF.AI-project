@@ -25,7 +25,15 @@ const AppContent: React.FC = () => {
 
   return (
     <>
-      <div style={{ position: 'absolute', zIndex: 2, padding: '1rem' }}>
+      {/* <div style={{ position: 'absolute', zIndex: 2, padding: '1rem' }}> */}
+      <div
+        style={{
+          position: 'fixed',
+          zIndex: 1001,
+          padding: '1rem',
+          left: '50px',
+        }}
+      >
         <h2 style={{ color: 'white' }}>
           Chat<span style={{ color: '#FF007A' }}>PDF</span>.AI
         </h2>
