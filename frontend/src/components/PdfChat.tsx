@@ -49,11 +49,14 @@ const PdfChat: React.FC = () => {
           throw new Error('Authentication token not found')
         }
 
-        const res = await axios.get(`http://localhost:5000/pdf/${pdfId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+        const res = await axios.get(
+          `https://chatpdf-ai.onrender.com/pdf/${pdfId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
         console.log('Response from server:', res.data)
 
         if (!res.data.success) {
@@ -85,7 +88,7 @@ const PdfChat: React.FC = () => {
     const token = localStorage.getItem('token')
     try {
       const res = await axios.post(
-        'http://localhost:5000/groq/prompt',
+        'https://chatpdf-ai.onrender.com/groq/prompt',
         {
           pdfId: pdfId,
           question: query,
