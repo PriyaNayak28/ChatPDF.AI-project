@@ -6,6 +6,7 @@ import session from 'express-session'
 import multer from 'multer'
 import fs from 'fs'
 import pdfParse from 'pdf-parse'
+import axios from 'axios'
 import dotenv from 'dotenv'
 import passport from 'passport'
 import userRoutes from './routes/user'
@@ -18,6 +19,7 @@ import { storeEmbeddingsToPinecone } from './services/storeEmbeddings'
 import { setupAssociations } from './models/associate'
 import { authenticate } from './middleware/auth'
 import sequelize from './util/database'
+import { storage } from './util/cloudinary'
 import User from './models/user'
 
 dotenv.config()
@@ -34,7 +36,7 @@ declare global {
 
 const app: Application = express()
 
-app.use(cors({ origin: 'https://chatpdfpro.netlify.app', credentials: true }))
+app.use(cors({ origin: 'chatwithaipdf.netlify.app', credentials: true }))
 app.use(bodyParser.json())
 app.use(express.json())
 
@@ -54,15 +56,15 @@ app.use('/user', userRoutes)
 app.use('/premium', premiumRoutes)
 app.use('/groq', chatRoutes)
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/')
-  },
-  filename: function (req, file, cb) {
-    const uniqueName = Date.now() + '-' + file.originalname
-    cb(null, uniqueName)
-  },
-})
+// const localStorage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, 'uploads/')
+//   },
+//   filename: function (req, file, cb) {
+//     const uniqueName = Date.now() + '-' + file.originalname
+//     cb(null, uniqueName)
+//   },
+// })
 const upload = multer({ storage })
 
 function chunkText(
@@ -91,11 +93,15 @@ app.post('/upload', authenticate, upload.single('pdf'), (req, res, next) => {
         res.status(401).json({ message: 'User not authenticated' })
         return
       }
-
-      const filePath = req.file.path
-      const dataBuffer = fs.readFileSync(filePath)
+      // const filePath = req.file.path
+      const fileUrl = (req.file as any).path
+      const response = await axios.get(fileUrl, { responseType: 'arraybuffer' })
+      const dataBuffer = Buffer.from(response.data as ArrayLike<number>)
       const pdfData = await pdfParse(dataBuffer)
       const extractedText = pdfData.text
+      // const dataBuffer = fs.readFileSync(filePath)
+      // const pdfData = await pdfParse(dataBuffer)
+      // const extractedText = pdfData.text
 
       const chunks = chunkText(extractedText, 1000, 100)
       const embeddings = await Promise.all(
@@ -107,7 +113,7 @@ app.post('/upload', authenticate, upload.single('pdf'), (req, res, next) => {
         userId: userId,
         storedFilename: req.file.filename,
         originalFilename: req.file.originalname,
-        filePath: req.file.path,
+        filePath: fileUrl,
         uploadDate: new Date(),
       })
 
@@ -156,14 +162,24 @@ app.get('/pdfs', authenticate, (req, res, next) => {
   })().catch(next)
 })
 
-app.get('/pdf/:filename', authenticate, (req, res) => {
-  const filename = decodeURIComponent(req.params.filename)
-  const filePath = path.join(__dirname, 'uploads', filename)
-  if (fs.existsSync(filePath)) {
-    res.sendFile(filePath)
-  } else {
-    res.status(404).send('File not found')
-  }
+app.get('/pdf/:id', authenticate, (req, res) => {
+  const { id } = req.params
+  PDF.findByPk(id)
+    .then((pdf) => {
+      if (!pdf) {
+        return res.status(404).send('PDF not found')
+      }
+      res.json({
+        success: true,
+        data: {
+          url: pdf.filePath,
+        },
+      })
+    })
+    .catch((error) => {
+      console.error('Error fetching PDF:', error)
+      res.status(500).json({ message: 'Error fetching PDF' })
+    })
 })
 
 const PORT = process.env.PORT || 5000
