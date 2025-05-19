@@ -47,7 +47,7 @@ const AppContent: React.FC = () => {
         <Route path="/" element={<MainPage />} />
         <Route path="/Hero" element={<PrivateRoute element={<Hero />} />} />
         <Route
-          path="/chat/:storedFilename"
+          path="/chat/:pdfId"
           element={<PrivateRoute element={<PdfChat />} />}
         />
       </Routes>

@@ -38,7 +38,7 @@ const PdfChat: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [pdfLoading, setPdfLoading] = useState(true)
   const [pdfError, setPdfError] = useState<string | null>(null)
-
+  console.log('PDF ID:', pdfId)
   useEffect(() => {
     const fetchPdf = async () => {
       try {
@@ -48,15 +48,16 @@ const PdfChat: React.FC = () => {
         if (!token) {
           throw new Error('Authentication token not found')
         }
+        // setPdfUrl(
+        //   'https://res.cloudinary.com/dwl1wchal/image/upload/chatpdf-uploads/v1747414060/1747414063090-jbhg.pdf'
+        // )
+        setPdfUrl('')
 
-        const res = await axios.get(
-          `https://chatpdf-ai.onrender.com/pdf/${pdfId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+        const res = await axios.get(`http://localhost:5000/pdf/${pdfId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         console.log('Response from server:', res.data)
 
         if (!res.data.success) {
@@ -65,6 +66,8 @@ const PdfChat: React.FC = () => {
 
         // The PDF URL is now coming from Cloudinary
         setPdfUrl(res.data.data.url)
+        console.log('PDF URL:', res.data.data.url)
+        console.log(res, 'res')
       } catch (error: unknown) {
         console.error('Error fetching PDF:', error)
         if (error instanceof Error) {
@@ -88,7 +91,7 @@ const PdfChat: React.FC = () => {
     const token = localStorage.getItem('token')
     try {
       const res = await axios.post(
-        'https://chatpdf-ai.onrender.com/groq/prompt',
+        'http://localhost:5000/groq/prompt',
         {
           pdfId: pdfId,
           question: query,
@@ -155,7 +158,7 @@ const PdfChat: React.FC = () => {
     localStorage.removeItem('token')
     navigate('/')
   }
-
+  console.log('PDF URL:', pdfUrl)
   return (
     <div className="pdf-chat-container">
       <div className="custom-header">

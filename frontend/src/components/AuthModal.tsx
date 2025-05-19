@@ -42,23 +42,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
     e.preventDefault()
     try {
       if (isSignup) {
-        await axios.post(
-          'https://chatpdf-ai.onrender.com/user/signup',
-          formData
-        )
+        await axios.post('http://localhost:5000/user/signup', formData)
         alert('User signed up successfully!')
         setIsSignup(false)
         setFormData({ name: '', email: '', password: '' })
         return
       }
 
-      const res = await axios.post(
-        'https://chatpdf-ai.onrender.com/user/login',
-        {
-          email: formData.email,
-          password: formData.password,
-        }
-      )
+      const res = await axios.post('http://localhost:5000/user/login', {
+        email: formData.email,
+        password: formData.password,
+      })
 
       const token = res.data.token
       localStorage.setItem('token', token)
