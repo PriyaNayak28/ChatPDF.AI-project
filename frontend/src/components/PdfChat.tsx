@@ -53,14 +53,11 @@ const PdfChat: React.FC = () => {
           'https://res.cloudinary.com/dwl1wchal/image/upload/v1747666069/chatpdf_uploads/1747666077693-jbhg.pdf.pdf'
         )
 
-        const res = await axios.get(
-          `https://chatpdf-ai-1.onrender.com/pdf/${pdfId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+        const res = await axios.get(`http://localhost:5000/pdf/${pdfId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         console.log('Response from server:', res.data)
 
         if (!res.data.success) {
@@ -84,7 +81,7 @@ const PdfChat: React.FC = () => {
     const token = localStorage.getItem('token')
     try {
       const res = await axios.post(
-        'https://chatpdf-ai-1.onrender.com/groq/prompt',
+        'http://localhost:5000/groq/prompt',
         {
           pdfId: pdfId,
           question: query,
