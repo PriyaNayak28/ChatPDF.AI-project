@@ -102,6 +102,7 @@ export const getPDFById = async (req: Request, res: Response) => {
 
   try {
     const pdf = await PDF.findByPk(id)
+    console.log('PDF found:', pdf)
 
     if (!pdf) {
       return res.status(404).send('PDF not found')
