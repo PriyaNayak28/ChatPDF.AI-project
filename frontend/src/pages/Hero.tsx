@@ -25,9 +25,12 @@ const Hero: React.FC = () => {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://localhost:5000/user/profile', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const response = await axios.get(
+          'https://chatpdf-ai-1.onrender.com/user/profile',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
         setUser(response.data)
       } catch (error) {
         console.error('Error fetching user data:', error)
@@ -38,9 +41,12 @@ const Hero: React.FC = () => {
     const fetchPdfList = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get('http://localhost:5000/pdfs', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const response = await axios.get(
+          'https://chatpdf-ai-1.onrender.com/pdfs',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
         console.log('PDF List Response:', response.data)
         if (Array.isArray(response.data)) {
           setPdfList(response.data)
@@ -104,16 +110,23 @@ const Hero: React.FC = () => {
     formData.append('pdf', file)
     const token = localStorage.getItem('token')
     try {
-      const res = await axios.post('http://localhost:5000/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const res = await axios.post(
+        'https://chatpdf-ai-1.onrender.com/upload',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       console.log('Upload response:', res.data)
-      const pdfListResponse = await axios.get('http://localhost:5000/pdfs', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const pdfListResponse = await axios.get(
+        'https://chatpdf-ai-1.onrender.com/pdfs',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
       console.log('PDF List Response after upload:', pdfListResponse.data)
       if (Array.isArray(pdfListResponse.data)) {
         setPdfList(pdfListResponse.data)
@@ -136,7 +149,7 @@ const Hero: React.FC = () => {
     try {
       const token = localStorage.getItem('token')
       const response = await axios.get(
-        'http://localhost:5000/premium/premiummembership',
+        'https://chatpdf-ai-1.onrender.com/premium/premiummembership',
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -157,7 +170,7 @@ const Hero: React.FC = () => {
         }) => {
           try {
             await axios.post(
-              'http://localhost:5000/premium/updatetransactionstatus',
+              'https://chatpdf-ai-1.onrender.com/premium/updatetransactionstatus',
               {
                 payment_id: response.razorpay_payment_id,
                 order_id: response.razorpay_order_id,
@@ -265,7 +278,6 @@ const Hero: React.FC = () => {
         )}
 
         <div className="chats-list">
-        
           {pdfList.length > 0 ? (
             pdfList.map((pdf, index) => (
               <div
