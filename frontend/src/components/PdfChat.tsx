@@ -48,10 +48,10 @@ const PdfChat: React.FC = () => {
         if (!token) {
           throw new Error('Authentication token not found')
         }
-        // setPdfUrl(
-        //   'https://res.cloudinary.com/dwl1wchal/image/upload/chatpdf-uploads/v1747414060/1747414063090-jbhg.pdf'
-        // )
-        setPdfUrl('')
+
+        setPdfUrl(
+          'https://res.cloudinary.com/dwl1wchal/image/upload/v1747666069/chatpdf_uploads/1747666077693-jbhg.pdf.pdf'
+        )
 
         const res = await axios.get(`http://localhost:5000/pdf/${pdfId}`, {
           headers: {
@@ -63,18 +63,8 @@ const PdfChat: React.FC = () => {
         if (!res.data.success) {
           throw new Error('Failed to load PDF')
         }
-
-        // The PDF URL is now coming from Cloudinary
-        setPdfUrl(res.data.data.url)
-        console.log('PDF URL:', res.data.data.url)
-        console.log(res, 'res')
       } catch (error: unknown) {
         console.error('Error fetching PDF:', error)
-        if (error instanceof Error) {
-          setPdfError(error.message || 'Failed to load PDF')
-        } else {
-          setPdfError('Failed to load PDF')
-        }
       } finally {
         setPdfLoading(false)
       }
