@@ -26,7 +26,7 @@ declare global {
 
 const app: Application = express()
 
-app.use(cors({ origin: '*', credentials: true }))
+app.use(cors({ origin: 'chatwithpdfai.netlify.app', credentials: true }))
 app.use(bodyParser.json())
 app.use(express.json())
 
