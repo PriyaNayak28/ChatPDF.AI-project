@@ -7,8 +7,8 @@ import {
   Navigate,
 } from 'react-router-dom'
 import Navbar from './components/Navbar'
-import MainPage from './pages/MainPage'
-import Hero from './pages/Hero'
+import MainPage from './components/MainPage'
+import Hero from './components/Hero'
 import * as pdfjsLib from 'pdfjs-dist'
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
 import PdfChat from './components/PdfChat'
