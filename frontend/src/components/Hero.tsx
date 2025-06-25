@@ -8,6 +8,15 @@ interface User {
   isPremium: boolean
 }
 
+interface PDF {
+  id: string
+  userId: number
+  storedFilename: string
+  originalFilename: string
+  filePath: string
+  uploadDate: string
+}
+
 const Hero: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false)
   const [chats, setChats] = useState<string[]>([])
@@ -16,9 +25,7 @@ const Hero: React.FC = () => {
   const [user, setUser] = useState<User | null>(null)
   const [showPremiumTooltip, setShowPremiumTooltip] = useState(false)
   // const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [pdfList, setPdfList] = useState<
-    { storedFilename: string; originalFilename: string }[]
-  >([])
+  const [pdfList, setPdfList] = useState<PDF[]>([])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -43,8 +50,10 @@ const Hero: React.FC = () => {
         })
         console.log('PDF List Response:', response.data)
         if (Array.isArray(response.data)) {
+          console.log('PDF list (direct array):', response.data)
           setPdfList(response.data)
         } else if (response.data.data && Array.isArray(response.data.data)) {
+          console.log('PDF list (nested data):', response.data.data)
           setPdfList(response.data.data)
         } else {
           console.error('Unexpected PDF list format:', response.data)
@@ -272,12 +281,13 @@ const Hero: React.FC = () => {
                 className="chat-item"
                 onClick={() => {
                   console.log('Clicked PDF:', pdf)
-                  if (pdf.storedFilename) {
-                    const encodedFilename = encodeURIComponent(
-                      pdf.storedFilename
-                    )
-                    console.log('Navigating to:', `/chat/${encodedFilename}`)
-                    navigate(`/chat/${encodedFilename}`)
+                  console.log('PDF ID:', pdf.id)
+                  console.log('PDF full object:', JSON.stringify(pdf, null, 2))
+                  if (pdf.id) {
+                    console.log('Navigating to:', `/chat/${pdf.id}`)
+                    navigate(`/chat/${pdf.id}`)
+                  } else {
+                    console.error('PDF ID is missing:', pdf)
                   }
                 }}
               >

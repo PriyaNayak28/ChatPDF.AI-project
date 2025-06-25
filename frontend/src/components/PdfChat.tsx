@@ -29,7 +29,6 @@ const PdfChat: React.FC = () => {
   })
   const zoomPluginInstance = zoomPlugin()
   const pageNavigationPluginInstance = pageNavigationPlugin()
-
   const navigate = useNavigate()
 
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
@@ -38,33 +37,49 @@ const PdfChat: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [pdfLoading, setPdfLoading] = useState(true)
   const [pdfError, setPdfError] = useState<string | null>(null)
-  console.log('PDF ID:', pdfId)
+
   useEffect(() => {
     const fetchPdf = async () => {
       try {
         setPdfLoading(true)
         setPdfError(null)
+
         const token = localStorage.getItem('token')
         if (!token) {
           throw new Error('Authentication token not found')
         }
 
-        setPdfUrl(
-          'https://res.cloudinary.com/dwl1wchal/image/upload/v1747666069/chatpdf_uploads/1747666077693-jbhg.pdf.pdf'
-        )
-
+        console.log('Making request for PDF ID:', pdfId)
         const res = await axios.get(`http://localhost:5000/pdf/${pdfId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
-        console.log('Response from server:', res.data)
 
-        if (!res.data.success) {
-          throw new Error('Failed to load PDF')
+        console.log('Response from server:', res.data)
+        console.log('Response data object:', res.data.data)
+        console.log('Response data type:', typeof res.data.data)
+        console.log('Response data keys:', res.data.data ? Object.keys(res.data.data) : 'data is undefined')
+        
+        // Try to get the URL from different possible locations
+        const pdfUrl = res.data.data?.url || res.data.data?.pdfUrl || res.data.url || res.data.pdfUrl
+        console.log('PDF URL from response:', pdfUrl)
+
+        if (!res.data.success || !pdfUrl) {
+          console.log('Validation failed - success:', res.data.success, 'url exists:', !!pdfUrl)
+          throw new Error('Failed to load PDF. PDF URL is missing.')
         }
+
+        setPdfUrl(pdfUrl)
       } catch (error: unknown) {
         console.error('Error fetching PDF:', error)
+
+        let errorMessage = 'Something went wrong while loading the PDF.'
+        if (error instanceof Error) {
+          errorMessage = error.message
+        }
+
+        setPdfError(errorMessage)
       } finally {
         setPdfLoading(false)
       }
@@ -99,7 +114,6 @@ const PdfChat: React.FC = () => {
       }
 
       const answer = res.data.data.answer
-      console.log('Answer from server:', answer)
       if (!answer) {
         throw new Error('Received empty response from server')
       }
@@ -107,27 +121,17 @@ const PdfChat: React.FC = () => {
       setMessages((prev) => [...prev, { question: query, answer }])
       setQuery('')
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error('Error getting answer:', error.message)
-        setMessages((prev) => [
-          ...prev,
-          {
-            question: query,
-            answer: `Error: ${
-              error.message || 'Failed to get response. Please try again.'
-            }`,
-          },
-        ])
-      } else {
-        console.error('Unknown error:', error)
-        setMessages((prev) => [
-          ...prev,
-          {
-            question: query,
-            answer: 'Error: Failed to get response. Please try again.',
-          },
-        ])
-      }
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Failed to get response. Please try again.'
+      setMessages((prev) => [
+        ...prev,
+        {
+          question: query,
+          answer: `Error: ${message}`,
+        },
+      ])
     } finally {
       setLoading(false)
     }
@@ -148,7 +152,7 @@ const PdfChat: React.FC = () => {
     localStorage.removeItem('token')
     navigate('/')
   }
-  console.log('PDF URL:', pdfUrl)
+
   return (
     <div className="pdf-chat-container">
       <div className="custom-header">
@@ -182,7 +186,7 @@ const PdfChat: React.FC = () => {
               />
             </div>
           ) : (
-            <div className="loading-pdf">Loading PDF...</div>
+            <div className="loading-pdf">No PDF available</div>
           )}
         </div>
 
@@ -212,7 +216,7 @@ const PdfChat: React.FC = () => {
           <div className="chat-input-container">
             <input
               type="text"
-              placeholder="Ask a question about the PDF..."
+              placeholder="As   \k a question about the PDF..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyPress={handleKeyPress}
