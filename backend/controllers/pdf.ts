@@ -103,19 +103,38 @@ export const getPDFById = async (req: Request, res: Response) => {
   try {
     const pdf = await PDF.findByPk(id)
     console.log('PDF found:', pdf)
+    console.log('PDF filePath:', pdf?.filePath)
 
     if (!pdf) {
-      return res.status(404).send('PDF not found')
+      console.log('PDF not found for ID:', id)
+      return res.status(404).json({ 
+        success: false,
+        message: 'PDF not found' 
+      })
     }
 
-    res.json({
+    if (!pdf.filePath) {
+      console.log('PDF filePath is empty for ID:', id)
+      return res.status(404).json({ 
+        success: false,
+        message: 'PDF file path is missing' 
+      })
+    }
+
+    const responseData = {
       success: true,
       data: {
-        url: pdf.filePath,
+        pdfUrl: pdf.filePath,
       },
-    })
+    }
+    console.log('Sending response:', responseData)
+
+    res.json(responseData)
   } catch (error) {
     console.error('Error fetching PDF:', error)
-    res.status(500).json({ message: 'Error fetching PDF' })
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching PDF' 
+    })
   }
 }
